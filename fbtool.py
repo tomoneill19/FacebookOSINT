@@ -4,8 +4,11 @@ import signal
 import sys
 import requests
 import re
+import base64
 
-TARGET = "No Target"
+Target = "No Target"
+Keyword = "*"
+Filters = []
 URL_REGEX = re.compile(
                 r'^(?:http|ftp)s?://' # http:// or https://
                 r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
@@ -24,12 +27,21 @@ def get_fbid(fb_url):
         return 0
 
 
-def help():
-    print("Commands: settarget" )
+def to_b64(data):
+    encodedBytes = base64.b64encode(data.encode("utf-8"))
+    return str(encodedBytes, "utf-8")
 
 
-def buildURL():
-    return ("http://www.google.com/search?q=test")
+def helplist():
+    print("Commands: settarget, setquery, addfilter, getposts, listvars" )
+
+
+def buildURL(search_type):
+    joined_filters = ",".join(Filters)
+    encoded_filters = to_b64(joined_filters).replace('=','')
+    search_url = "https://www.facebook.com/search/" + search_type + "/?q="
+    search_url += Keyword + '&epa=FILTERS&filters=' + encoded_filters
+    return (search_url)
 
 
 def gotoURL(url):
@@ -39,34 +51,73 @@ def gotoURL(url):
 def getID(arg):
     if len(arg) == 15:
         return(arg)
-    elif re.match(URL_REGEX, arg):
+    if re.match(URL_REGEX, arg):
         return get_fbid(arg)
-    else:
-        return get_fbid("https://www.facebook.com/" + arg)
+    return get_fbid("https://www.facebook.com/" + arg)
 
 def set_target():
     print("Enter a username, url or ID to set the target")
-    print("settarget>", end = "")
-    TARGET = getID(input())
+    print("settarget>", end = " ")
+    Target = getID(input())
     print("Target Set! (0 implies malformed input)")
-    print("Target = " + str(TARGET))
+    print("Target = " + str(Target))
+    Filters.append("{\"rp_author\":{\"name\":\"author\",\"args\":\""+str(Target)+"\"}")
+
+
+def set_keyword():
+    print("Enter a keyword to use in the search query...")
+    print("setquery>", end = " ")
+    global Keyword
+    Keyword = input()
+    print("Keyword set!")
+    print("Keyword = " + str(Keyword))
+
+
+def add_filter():
+    print("Enter filter type to add...")
+    print("filters: (inGroup,)")
+    print("addfilter>", end = " ")
+    if input() == "inGroup":
+        print("Enter the group name / url etc to enter as a filter...")
+        group = input()
+        Filters.append("{\"rp_group\":\"{\"name\":\"group_posts\",\"args\":\""+getID(group)+"\"}\"}")
+    print("Filters = [" + ",".join(Filters) + "]")
+
+
+def get_posts():
+    gotoURL(buildURL("posts"))
+
+
+def list_vars():
+    print("Target = " + str(Target))
+    print("query = " + str(Keyword))
+    print("Filters = [" + ",".join(Filters) + "]")
+
 
 def parse_cmd(cmd):
     if cmd == "help":
-        help()
+        helplist()
     if cmd == "settarget":
         set_target()
+    if cmd == "addfilter":
+        add_filter()
+    if cmd == "getposts":
+        get_posts()
+    if cmd == "setquery":
+        set_keyword()
+    if cmd == "listvars":
+        list_vars()
 
 def menu():
-    print("Menu>", end = "")
+    print("Menu>", end = " ")
     parse_cmd(input().lower())
 
 
-def exit(signal, frame):
+def exit_handle(signal, frame):
     sys.exit(0)
 
 
-signal.signal(signal.SIGINT, exit)
+signal.signal(signal.SIGINT, exit_handle)
 
 
 
@@ -82,7 +133,7 @@ banner = '''
 '''
 print(banner)
 print("Welcome to the Facebook OSINT tool by Tom (@tomoneill19)")
-print("Target = " + str(TARGET))
+list_vars()
 print("Type \"help\" for a list of commands")
 
 while True:
