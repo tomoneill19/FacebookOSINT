@@ -37,7 +37,7 @@ def helplist():
 
 
 def buildURL(search_type):
-    joined_filters = ",".join(Filters)
+    joined_filters = "{"+",".join(Filters)+"}"
     encoded_filters = to_b64(joined_filters).replace('=','')
     search_url = "https://www.facebook.com/search/" + search_type + "/?q="
     search_url += Keyword + '&epa=FILTERS&filters=' + encoded_filters
@@ -64,7 +64,7 @@ def set_target():
     Target = getID(input())
     print("Target Set! (0 implies malformed input)")
     print("Target = " + str(Target))
-    Filters.append("{\"rp_author\":{\"name\":\"author\",\"args\":\""+str(Target)+"\"}")
+    Filters.append("\"rp_author\":{\"name\":\"author\",\"args\":\""+str(Target)+"\"}")
 
 
 def set_keyword():
@@ -83,7 +83,7 @@ def add_filter():
     if input() == "inGroup":
         print("Enter the group name / url etc to enter as a filter...")
         group = input()
-        Filters.append("{\"rp_group\":\"{\"name\":\"group_posts\",\"args\":\""+getID(group)+"\"}\"}")
+        Filters.append("{\"rp_group\":\"{\"name\":\"group_posts\",\"args\":\""+getID(group)+"\"}\"")
     print("Filters = [" + ",".join(Filters) + "]")
 
 
