@@ -33,7 +33,7 @@ def to_b64(data):
 
 
 def helplist():
-    print("Commands: settarget, setquery, addfilter, getposts, listvars" )
+    print("Commands: settarget, setquery, addfilter, getposts, getpostsurl, listvars" )
 
 
 def buildURL(search_type):
@@ -47,6 +47,9 @@ def buildURL(search_type):
 def gotoURL(url):
     webbrowser.open_new_tab(url)
 
+
+def printURL(url):
+    print("URL: " + url)
 
 def getID(arg):
     if len(arg) == 15:
@@ -88,6 +91,9 @@ def get_posts():
     gotoURL(buildURL("posts"))
 
 
+def get_posts_url():
+    printURL(buildURL("posts"))
+
 def list_vars():
     print("Target = " + str(Target))
     print("query = " + str(Keyword))
@@ -103,6 +109,8 @@ def parse_cmd(cmd):
         add_filter()
     if cmd == "getposts":
         get_posts()
+    if cmd == "getpostsurl":
+        get_posts_url()
     if cmd == "setquery":
         set_keyword()
     if cmd == "listvars":
