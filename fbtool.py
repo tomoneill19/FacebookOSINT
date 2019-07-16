@@ -39,11 +39,11 @@ def helplist():
 
 
 def buildURL(search_type):
-    joined_filters = "{" + ",".join(filters) + "}"
+    joined_filters = f"\u007b{','.join(filters)}\u007d"
     encoded_filters = to_b64(joined_filters).replace("=", "")
     search_url = f"https://www.facebook.com/search/{search_type}/?q="
     search_url += f"{keyword}&epa=FILTERS&filters={encoded_filters}"
-    return (search_url)
+    return search_url
 
 
 def gotoURL(url):
@@ -56,7 +56,7 @@ def printURL(url):
 
 def getID(arg):
     if len(arg) == 15:
-        return (arg)
+        return arg
     if re.match(URL_REGEX, arg):
         return get_fbid(arg)
     return get_fbid("https://www.facebook.com/" + arg)
