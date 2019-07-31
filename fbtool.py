@@ -10,18 +10,20 @@ Target = "No Target"
 Keyword = "*"
 Filters = []
 URL_REGEX = re.compile(
-                r'^(?:http|ftp)s?://' # http:// or https://
-                r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
-                r'localhost|' #localhost...
-                r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
-                r'(?::\d+)?' # optional port
-                r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    r'^(?:http|ftp)s?://'  # http:// or https://
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  #domain...
+    r'localhost|'  #localhost...
+    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+    r'(?::\d+)?'  # optional port
+    r'(?:/?|[/?]\S+)$',
+    re.IGNORECASE)
+
 
 def get_fbid(fb_url):
     URL = "https://findmyfbid.com/"
     PARAMS = {'url': fb_url}
     try:
-        r = requests.post(url = URL, params= PARAMS)
+        r = requests.post(url=URL, params=PARAMS)
         return r.json().get("id")
     except Exception:
         return 0
@@ -33,12 +35,12 @@ def to_b64(data):
 
 
 def helplist():
-    print("Commands: settarget, setquery, addfilter, getposts, getpostsurl, listvars" )
+    print("Commands: settarget, setquery, addfilter, getposts, getpostsurl, listvars")
 
 
 def buildURL(search_type):
-    joined_filters = "{"+",".join(Filters)+"}"
-    encoded_filters = to_b64(joined_filters).replace('=','')
+    joined_filters = "{" + ",".join(Filters) + "}"
+    encoded_filters = to_b64(joined_filters).replace('=', '')
     search_url = "https://www.facebook.com/search/" + search_type + "/?q="
     search_url += Keyword + '&epa=FILTERS&filters=' + encoded_filters
     return (search_url)
@@ -51,25 +53,27 @@ def gotoURL(url):
 def printURL(url):
     print("URL: " + url)
 
+
 def getID(arg):
     if len(arg) == 15:
-        return(arg)
+        return (arg)
     if re.match(URL_REGEX, arg):
         return get_fbid(arg)
     return get_fbid("https://www.facebook.com/" + arg)
 
+
 def set_target():
     print("Enter a username, url or ID to set the target")
-    print("settarget>", end = " ")
+    print("settarget>", end=" ")
     Target = getID(input())
     print("Target Set! (0 implies malformed input)")
     print("Target = " + str(Target))
-    Filters.append("\"rp_author\":{\"name\":\"author\",\"args\":\""+str(Target)+"\"}")
+    Filters.append("\"rp_author\":{\"name\":\"author\",\"args\":\"" + str(Target) + "\"}")
 
 
 def set_keyword():
     print("Enter a keyword to use in the search query...")
-    print("setquery>", end = " ")
+    print("setquery>", end=" ")
     global Keyword
     Keyword = input()
     print("Keyword set!")
@@ -79,11 +83,11 @@ def set_keyword():
 def add_filter():
     print("Enter filter type to add...")
     print("filters: (inGroup,)")
-    print("addfilter>", end = " ")
+    print("addfilter>", end=" ")
     if input() == "inGroup":
         print("Enter the group name / url etc to enter as a filter...")
         group = input()
-        Filters.append("{\"rp_group\":\"{\"name\":\"group_posts\",\"args\":\""+getID(group)+"\"}\"")
+        Filters.append("{\"rp_group\":\"{\"name\":\"group_posts\",\"args\":\"" + getID(group) + "\"}\"")
     print("Filters = [" + ",".join(Filters) + "]")
 
 
@@ -93,6 +97,7 @@ def get_posts():
 
 def get_posts_url():
     printURL(buildURL("posts"))
+
 
 def list_vars():
     print("Target = " + str(Target))
@@ -116,8 +121,9 @@ def parse_cmd(cmd):
     if cmd == "listvars":
         list_vars()
 
+
 def menu():
-    print("Menu>", end = " ")
+    print("Menu>", end=" ")
     parse_cmd(input().lower())
 
 
@@ -126,9 +132,6 @@ def exit_handle(signal, frame):
 
 
 signal.signal(signal.SIGINT, exit_handle)
-
-
-
 
 banner = '''
    ______ ____   ____   _____ _____ _   _ _______
@@ -146,4 +149,3 @@ print("Type \"help\" for a list of commands")
 
 while True:
     menu()
-
