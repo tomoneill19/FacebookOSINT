@@ -6,6 +6,15 @@ import requests
 import re
 import base64
 
+BANNER = '''
+   ______ ____   ____   _____ _____ _   _ _______
+  |  ____|  _ \ / __ \ / ____|_   _| \ | |__   __|
+  | |__  | |_) | |  | | (___   | | |  \| |  | |
+  |  __| |  _ <| |  | |\___ \  | | | . ` |  | |
+  | |    | |_) | |__| |____) |_| |_| |\  |  | |
+  |_|    |____/ \____/|_____/|_____|_| \_|  |_|
+
+'''
 Target = "No Target"
 Keyword = "*"
 Filters = []
@@ -66,8 +75,11 @@ def set_target():
     print("Enter a username, url or ID to set the target")
     print("settarget>", end=" ")
     Target = getID(input())
-    print("Target Set! (0 implies malformed input)")
-    print("Target = " + str(Target))
+    if Target == 0:
+        print("Malformed imput, target is \"0\"")
+    else:
+        print("Target Set!")
+        print("Target = " + str(Target))
     Filters.append("\"rp_author\":{\"name\":\"author\",\"args\":\"" + str(Target) + "\"}")
 
 
@@ -131,21 +143,13 @@ def exit_handle(signal, frame):
     sys.exit(0)
 
 
-signal.signal(signal.SIGINT, exit_handle)
+if __name__ == "__main__":
+    signal.signal(signal.SIGINT, exit_handle)
 
-banner = '''
-   ______ ____   ____   _____ _____ _   _ _______
-  |  ____|  _ \ / __ \ / ____|_   _| \ | |__   __|
-  | |__  | |_) | |  | | (___   | | |  \| |  | |
-  |  __| |  _ <| |  | |\___ \  | | | . ` |  | |
-  | |    | |_) | |__| |____) |_| |_| |\  |  | |
-  |_|    |____/ \____/|_____/|_____|_| \_|  |_|
+    print(BANNER)
+    print("Welcome to the Facebook OSINT tool by Tom (@tomoneill19)")
+    list_vars()
+    print("Type \"help\" for a list of commands")
 
-'''
-print(banner)
-print("Welcome to the Facebook OSINT tool by Tom (@tomoneill19)")
-list_vars()
-print("Type \"help\" for a list of commands")
-
-while True:
-    menu()
+    while True:
+        menu()
