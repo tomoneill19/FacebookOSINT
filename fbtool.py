@@ -52,7 +52,7 @@ def buildURL(search_type):
     encoded_filters = to_b64(joined_filters).replace('=', '')
     search_url = "https://www.facebook.com/search/" + search_type + "/?q="
     search_url += Keyword + '&epa=FILTERS&filters=' + encoded_filters
-    return (search_url)
+    return search_url
 
 
 def gotoURL(url):
@@ -64,39 +64,45 @@ def printURL(url):
 
 
 def getID(arg):
-    if len(arg) == 15:
-        return (arg)
+    if len(arg) == 15 and arg.isnumeric():
+        return arg
     if re.match(URL_REGEX, arg):
         return get_fbid(arg)
     return get_fbid("https://www.facebook.com/" + arg)
 
 
-def set_target():
-    print("Enter a username, url or ID to set the target")
-    print("settarget>", end=" ")
-    Target = getID(input())
+def set_target(arg=""):
+    global Target
+    if arg == "":
+        print("Enter a username, url or ID to set the target")
+        Target = getID(input("settarget> "))
+    else:
+        Target = getID(arg)
     if Target == 0:
-        print("Malformed imput, target is \"0\"")
+        print("Target not found - API returned \"0\"")
     else:
         print("Target Set!")
         print("Target = " + str(Target))
     Filters.append("\"rp_author\":{\"name\":\"author\",\"args\":\"" + str(Target) + "\"}")
 
 
-def set_keyword():
-    print("Enter a keyword to use in the search query...")
-    print("setquery>", end=" ")
+def set_keyword(arg=""):
     global Keyword
-    Keyword = input()
+    if arg == "":
+        print("Enter a keyword to use in the search query...")
+        Keyword = input("setquery> ")
+    else:
+        Keyword = arg
     print("Keyword set!")
     print("Keyword = " + str(Keyword))
 
 
-def add_filter():
+def add_filter(arg=""):
     print("Enter filter type to add...")
     print("filters: (inGroup,)")
-    print("addfilter>", end=" ")
-    if input() == "inGroup":
+    if arg == "":
+        arg = input("addfilter> ")
+    if arg == "inGroup":
         print("Enter the group name / url etc to enter as a filter...")
         group = input()
         Filters.append("{\"rp_group\":\"{\"name\":\"group_posts\",\"args\":\"" + getID(group) + "\"}\"")
@@ -118,25 +124,34 @@ def list_vars():
 
 
 def parse_cmd(cmd):
-    if cmd == "help":
+    if cmd[0] == "help":
         helplist()
-    if cmd == "settarget":
-        set_target()
-    if cmd == "addfilter":
-        add_filter()
-    if cmd == "getposts":
+    if cmd[0] == "settarget":
+        if len(cmd) == 1:
+            set_target()
+        else:
+            set_target(cmd[1])
+    if cmd[0] == "addfilter":
+        if len(cmd) == 1:
+            add_filter()
+        else:
+            add_filter(cmd[1])
+    if cmd[0] == "setquery":
+        if len(cmd) == 1:
+            set_keyword()
+        else:
+            set_keyword(cmd[1])
+    if cmd[0] == "getposts":
         get_posts()
-    if cmd == "getpostsurl":
+    if cmd[0] == "getpostsurl":
         get_posts_url()
-    if cmd == "setquery":
-        set_keyword()
-    if cmd == "listvars":
+    if cmd[0] == "listvars":
         list_vars()
 
 
 def menu():
-    print("Menu>", end=" ")
-    parse_cmd(input().lower())
+    print("Menu> ", end="")
+    parse_cmd(input().lower().split(" "))
 
 
 def exit_handle(signal, frame):
