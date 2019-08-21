@@ -136,7 +136,7 @@ def clear():
         # for mac and linux
     else:
         _ = system('clear')
-
+    print(BANNER)
 
 def parse_cmd(cmd):
     if cmd[0] == "help":
