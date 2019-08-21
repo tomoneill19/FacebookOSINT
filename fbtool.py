@@ -5,6 +5,7 @@ import sys
 import requests
 import re
 import base64
+from os import system, name
 
 BANNER = '''
    ______ ____   ____   _____ _____ _   _ _______
@@ -44,7 +45,11 @@ def to_b64(data):
 
 
 def helplist():
-    print("Commands: settarget, setquery, addfilter, getposts, getpostsurl, listvars")
+    print("\nsettarget [<target>]")
+    print("setquery [<query>]")
+    print("addfilter [<filter>]")
+    print("getposts [url]")
+    print("listvars\n")
 
 
 def buildURL(search_type):
@@ -82,7 +87,7 @@ def set_target(arg=""):
         print("Target not found - API returned \"0\"")
     else:
         print("Target Set!")
-        print("Target = " + str(Target))
+        print("Target = " + str(Target) + "\n")
     Filters.append("\"rp_author\":{\"name\":\"author\",\"args\":\"" + str(Target) + "\"}")
 
 
@@ -94,7 +99,7 @@ def set_keyword(arg=""):
     else:
         Keyword = arg
     print("Keyword set!")
-    print("Keyword = " + str(Keyword))
+    print("Keyword = " + str(Keyword) + "\n")
 
 
 def add_filter(arg=""):
@@ -106,7 +111,7 @@ def add_filter(arg=""):
         print("Enter the group name / url etc to enter as a filter...")
         group = input()
         Filters.append("{\"rp_group\":\"{\"name\":\"group_posts\",\"args\":\"" + getID(group) + "\"}\"")
-    print("Filters = [" + ",".join(Filters) + "]")
+    print("Filters = [" + ",".join(Filters) + "] \n")
 
 
 def get_posts():
@@ -114,13 +119,23 @@ def get_posts():
 
 
 def get_posts_url():
-    printURL(buildURL("posts"))
+    printURL(buildURL("posts") + "\n")
 
 
 def list_vars():
     print("Target = " + str(Target))
     print("query = " + str(Keyword))
     print("Filters = [" + ",".join(Filters) + "]")
+
+
+def clear():
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+
+        # for mac and linux
+    else:
+        _ = system('clear')
 
 
 def parse_cmd(cmd):
@@ -142,11 +157,15 @@ def parse_cmd(cmd):
         else:
             set_keyword(cmd[1])
     if cmd[0] == "getposts":
-        get_posts()
-    if cmd[0] == "getpostsurl":
-        get_posts_url()
+        if len(cmd) == 1:
+            get_posts()
+        if len(cmd) == 2:
+            if cmd[1] == "url":
+                get_posts_url()
     if cmd[0] == "listvars":
         list_vars()
+    if cmd[0] == "clear":
+        clear()
 
 
 def menu():
@@ -162,9 +181,9 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, exit_handle)
 
     print(BANNER)
-    print("Welcome to the Facebook OSINT tool by Tom (@tomoneill19)")
+    print("Welcome to the Facebook OSINT tool by Tom (@tomoneill19)\n")
     list_vars()
-    print("Type \"help\" for a list of commands")
+    print("\nType \"help\" for a list of commands...\n")
 
     while True:
         menu()
