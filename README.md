@@ -1,6 +1,7 @@
 # Facebook OSINT Tool
 * A tool for more easily indexing public facebook information
 * Replaces the now-removed graph search after it was removed on 19/06/19
+* Now a part of [BlackArch Linux](https://github.com/BlackArch/blackarch) as of 25/12/19
 
 ### Disclaimer
 * I don't condone using tools similar to this for e-stalking or other malicious purposes
