@@ -3,10 +3,8 @@
 * Replaces the now-removed graph search after it was removed on 19/06/19
 * Now a part of [BlackArch Linux](https://github.com/BlackArch/blackarch) as of 25/12/19
 
-### Disclaimer
-* I don't condone using tools similar to this for e-stalking or other malicious purposes
-* This tool is created with the intent to help you lock down what is visible to the public on your own account
-* This is a work in progress, it does the job but I'll add to it occasionally
+### Notice
+This tool is effectively deprecated by the discontinuation of the underlying API. It would require reimplementing for me to make it work again. Perhaps I will do this at some point.
 
 ### Usage
 `help` - List usage  
